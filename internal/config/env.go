@@ -7,9 +7,6 @@ import (
 	"time"
 )
 
-var TokenType = "Bearer"
-var Env = ".env"
-
 type envKey struct {
 	JwtKey []byte
 	TTL    time.Duration

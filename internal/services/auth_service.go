@@ -8,6 +8,7 @@ import (
 	"github.com/ngocthanh06/authentication/internal/config"
 	"github.com/ngocthanh06/authentication/internal/models"
 	"github.com/ngocthanh06/authentication/internal/repositories"
+	"github.com/ngocthanh06/authentication/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -69,7 +70,7 @@ func (authService *AuthService) Login(ctx *gin.Context, data *models.Credentials
 
 	success := models.ResponseDataLoginSuccess{
 		AccessToken: tokenString,
-		TokenType:   config.TokenType,
+		TokenType:   utils.TokenType,
 		ExpiresIn:   minutesLeft,
 	}
 

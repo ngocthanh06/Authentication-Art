@@ -6,10 +6,11 @@ import (
 	"github.com/ngocthanh06/authentication/internal/database"
 	"github.com/ngocthanh06/authentication/internal/providers"
 	"github.com/ngocthanh06/authentication/internal/routes"
+	"github.com/ngocthanh06/authentication/internal/utils"
 )
 
 func init() {
-	godotenv.Load(config.Env)
+	godotenv.Load(utils.Env)
 	config.InitEnvKey()
 }
 
