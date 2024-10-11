@@ -39,8 +39,28 @@ func checkAuthenticationHeader(c *gin.Context) error {
 	return nil
 }
 
+func Recovery() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		fmt.Println("start recovery")
+		defer func() {
+			if err := recover(); err != nil {
+				if r := err.(error); r != nil {
+					c.AbortWithStatusJSON(http.StatusInternalServerError, common.ResponseError(http.StatusInternalServerError,
+						r,
+						r.Error()),
+					)
+				}
+			}
+		}()
+		fmt.Println("end recovery")
+	}
+}
+
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// recovery
+		Recovery()
+
 		// check authentication token header
 		if err := checkAuthenticationHeader(c); err != nil {
 			c.JSON(http.StatusUnauthorized, common.ResponseError(http.StatusUnauthorized, err, err.Error()))

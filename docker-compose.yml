@@ -24,6 +24,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - redis
     volumes:
       - ./:/app
     environment:
@@ -33,6 +34,16 @@ services:
       POSTGRES_DB: ${DB_NAME}
     networks:
       - authentication_go
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    command: --requirepass ${REDIS_PASSWORD}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+#      REDIS_USERNAME: redis
+#      REDIS_DISABLE_DEFAULT_USER: true
 
 volumes:
   authentication:

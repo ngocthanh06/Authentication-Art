@@ -32,6 +32,10 @@ func CreateRoutes() {
 		// Un-login
 		v1.POST("/login", handlers.Login)
 		v1.POST("/register", handlers.CreateUser)
+
+		// connect to social
+		v1.GET("redirect/:provider", handlers.RedirectProviderLogin)
+		v1.GET("auth/:provider/callback", handlers.CallbackProvider)
 	}
 
 	route.Run(fmt.Sprintf(":%s", "8080"))
