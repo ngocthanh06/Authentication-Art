@@ -1,26 +1,29 @@
 package repositories
 
 import (
-	"context"
 	"fmt"
 	"github.com/ngocthanh06/authentication/internal/models"
 	"gorm.io/gorm"
 )
 
-type UserRepository interface {
-	UserCreate(ctx context.Context, data *models.TodoItemCreation) error
-	UserList(ctx context.Context, data *models.TodoItemCreation) error
-	CreateUser(ctx context.Context, data models.UserCreation) (*models.User, error)
-	FindUser(ctx *context.Context, data *models.User) (*models.User, error)
+type UserDbStorage struct {
+	db *gorm.DB
 }
 
-func NewUserRepository(dtb *gorm.DB) *DbStorage {
-	return &DbStorage{
+type UserRepositoryInterface interface {
+	UserList(data map[string]interface{}) (*[]models.User, error)
+	GetUserByConditions(conditions map[string]interface{}) (*models.User, error)
+	CreateUser(user *models.User) (*models.User, error)
+	FindUser(result map[string]interface{}) (*models.User, error)
+}
+
+func NewUserRepository(dtb *gorm.DB) UserRepositoryInterface {
+	return &UserDbStorage{
 		db: dtb,
 	}
 }
 
-func (storage *DbStorage) UserList(ctx context.Context, data map[string]interface{}) (*[]models.User, error) {
+func (storage *UserDbStorage) UserList(data map[string]interface{}) (*[]models.User, error) {
 	var users []models.User
 	results := storage.db.Where(data).Find(&users)
 
@@ -29,7 +32,7 @@ func (storage *DbStorage) UserList(ctx context.Context, data map[string]interfac
 	return &users, nil
 }
 
-func (storage *DbStorage) GetUserByConditions(ctx context.Context, conditions map[string]interface{}) (*models.User, error) {
+func (storage *UserDbStorage) GetUserByConditions(conditions map[string]interface{}) (*models.User, error) {
 	var user models.User
 	result := storage.db.Where(conditions).First(&user)
 
@@ -40,7 +43,7 @@ func (storage *DbStorage) GetUserByConditions(ctx context.Context, conditions ma
 	return &user, nil
 }
 
-func (storage *DbStorage) CreateUser(ctx context.Context, user *models.User) (*models.User, error) {
+func (storage *UserDbStorage) CreateUser(user *models.User) (*models.User, error) {
 	result := storage.db.Create(&user)
 
 	if result.Error != nil {
@@ -50,7 +53,7 @@ func (storage *DbStorage) CreateUser(ctx context.Context, user *models.User) (*m
 	return user, nil
 }
 
-func (storage *DbStorage) FindUser(ctx context.Context, result map[string]interface{}) (*models.User, error) {
+func (storage *UserDbStorage) FindUser(result map[string]interface{}) (*models.User, error) {
 	var user models.User
 
 	results := storage.db.First(&user, result)

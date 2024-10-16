@@ -18,7 +18,7 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	result, err := providers.AuthServ.Login(ctx, &reqParams)
+	result, err := providers.AuthServ.Login(&reqParams)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, common.ResponseError(http.StatusBadRequest, err, err.Error()))
