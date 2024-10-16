@@ -1,7 +1,6 @@
 package services
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
@@ -11,24 +10,24 @@ import (
 	"gorm.io/gorm"
 )
 
+type userService struct {
+	userRepository repositories.UserRepositoryInterface
+}
+
 type UserServiceInterface interface {
-	UserCreate(ctx context.Context, data *models.TodoItemCreation) error
-	UserList(ctx context.Context, data *models.TodoItemCreation) error
-	FindUser(ctx *context.Context, data *models.User) (*models.User, error)
+	UserList() (*[]models.User, error)
+	UserCreate(params *models.UserCreation) (*models.User, error)
+	FindUser(id string) (*models.User, error)
 }
 
-type UserService struct {
-	userRepository *repositories.DbStorage
-}
-
-func NewUserService(repo *repositories.DbStorage) *UserService {
-	return &UserService{
-		userRepository: repo,
+func NewUserService(userRepository repositories.UserRepositoryInterface) UserServiceInterface {
+	return &userService{
+		userRepository: userRepository,
 	}
 }
 
-func (userSer *UserService) UserList(ctx context.Context) (*[]models.User, error) {
-	result, err := userSer.userRepository.UserList(ctx, map[string]interface{}{})
+func (userSer *userService) UserList() (*[]models.User, error) {
+	result, err := userSer.userRepository.UserList(map[string]interface{}{})
 
 	if err != nil {
 		return nil, err
@@ -37,9 +36,9 @@ func (userSer *UserService) UserList(ctx context.Context) (*[]models.User, error
 	return result, nil
 }
 
-func (userService *UserService) UserCreate(ctx context.Context, params *models.UserCreation) (*models.User, error) {
+func (userService *userService) UserCreate(params *models.UserCreation) (*models.User, error) {
 	// check user exists if exists error
-	result, err := userService.userRepository.GetUserByConditions(ctx, map[string]interface{}{
+	result, err := userService.userRepository.GetUserByConditions(map[string]interface{}{
 		"email": params.Email,
 	})
 
@@ -81,7 +80,7 @@ func (userService *UserService) UserCreate(ctx context.Context, params *models.U
 	}
 
 	// create new user
-	result, err = userService.userRepository.CreateUser(ctx, &user)
+	result, err = userService.userRepository.CreateUser(&user)
 
 	if err != nil {
 		return nil, err
@@ -90,8 +89,8 @@ func (userService *UserService) UserCreate(ctx context.Context, params *models.U
 	return result, nil
 }
 
-func (userService *UserService) FindUser(ctx context.Context, id string) (*models.User, error) {
-	result, err := userService.userRepository.FindUser(ctx, map[string]interface{}{
+func (userSer *userService) FindUser(id string) (*models.User, error) {
+	result, err := userSer.userRepository.FindUser(map[string]interface{}{
 		"id": id,
 	})
 

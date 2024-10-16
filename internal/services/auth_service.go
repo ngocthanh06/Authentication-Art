@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
 	"github.com/ngocthanh06/authentication/internal/config"
 	"github.com/ngocthanh06/authentication/internal/models"
 	"github.com/ngocthanh06/authentication/internal/repositories"
@@ -13,28 +12,25 @@ import (
 	"time"
 )
 
-type AuthServiceInterface interface {
-	Login(ctx *gin.Context) (string, error)
-}
-
 type AuthService struct {
 	authRepository *repositories.DbStorage
-	userRepository *repositories.DbStorage
+	userRepository repositories.UserRepositoryInterface
 }
 
 func NewAuthService(authRepository *repositories.DbStorage) *AuthService {
 	return &AuthService{
 		authRepository: authRepository,
-		userRepository: authRepository,
 	}
 }
 
 // Login /**
-func (authService *AuthService) Login(ctx *gin.Context, data *models.Credentials) (*models.ResponseDataLoginSuccess, error) {
+func (authService *AuthService) Login(data *models.Credentials) (*models.ResponseDataLoginSuccess, error) {
 	// check exist user
-	result, err := authService.userRepository.GetUserByConditions(ctx, map[string]interface{}{
+	result, err := authService.userRepository.GetUserByConditions(map[string]interface{}{
 		"email": data.Email,
 	})
+
+	fmt.Print(result)
 
 	if err != nil {
 		fmt.Println("user err", err)
@@ -75,4 +71,5 @@ func (authService *AuthService) Login(ctx *gin.Context, data *models.Credentials
 	}
 
 	return &success, nil
+	return nil, nil
 }

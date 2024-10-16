@@ -11,7 +11,7 @@ ENV DB_NAME=authentication
 ENV DB_PASS=pass
 ENV DB_USER=user
 ENV PORT=5432
-ENV APP_PORT=8080
+ENV APP_PORT=8081
 
 WORKDIR /app
 
@@ -21,8 +21,8 @@ RUN go mod download
 
 COPY ../ .
 
-RUN go install github.com/air-verse/air@latest
+#RUN go install github.com/air-verse/air@latest
 
 RUN go build -o main ./app/authentication
 
-CMD ["air"]
+#CMD ["air"]

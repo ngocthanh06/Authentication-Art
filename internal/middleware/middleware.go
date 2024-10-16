@@ -70,7 +70,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// check user exists
-		user, err := providers.UserServ.FindUser(c, string(claims.Subject))
+		user, err := providers.UserServ.FindUser(string(claims.Subject))
 
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, common.ResponseError(http.StatusUnauthorized, err, err.Error()))

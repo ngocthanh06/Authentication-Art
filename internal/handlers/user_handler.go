@@ -6,12 +6,22 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/ngocthanh06/authentication/internal/common"
 	"github.com/ngocthanh06/authentication/internal/models"
-	"github.com/ngocthanh06/authentication/internal/providers"
+	"github.com/ngocthanh06/authentication/internal/services"
 	"log"
 	"net/http"
 )
 
-func CreateUser(ctx *gin.Context) {
+type userHandler struct {
+	userService services.UserServiceInterface
+}
+
+func UserHandler(userService services.UserServiceInterface) *userHandler {
+	return &userHandler{
+		userService: userService,
+	}
+}
+
+func (userService *userHandler) CreateUser(ctx *gin.Context) {
 	var user models.UserCreation
 
 	if err := ctx.ShouldBindWith(&user, binding.Form); err != nil {
@@ -19,7 +29,7 @@ func CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	result, err := providers.UserServ.UserCreate(ctx, &user)
+	result, err := userService.userService.UserCreate(&user)
 
 	if err != nil {
 		log.Print("Cannot create user: ", err.Error())
@@ -32,8 +42,8 @@ func CreateUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, common.ResponseSuccessfully(map[string]interface{}{"users": result}, "created success"))
 }
 
-func GetUsers(ctx *gin.Context) {
-	results, err := providers.UserServ.UserList(ctx)
+func (userService *userHandler) GetUsers(ctx *gin.Context) {
+	results, err := userService.userService.UserList()
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, common.ResponseError(http.StatusBadRequest, err, err.Error()))
@@ -44,11 +54,11 @@ func GetUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, common.ResponseSuccessfully(map[string]interface{}{"users": results}, "User list"))
 }
 
-func FindUser(ctx *gin.Context) {
+func (userService *userHandler) FindUser(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	fmt.Println("id stirng", id)
-	result, err := providers.UserServ.FindUser(ctx, id)
+	result, err := userService.userService.FindUser(id)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, common.ResponseError(http.StatusBadRequest, err, "User not found!"))

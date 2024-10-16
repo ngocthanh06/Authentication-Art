@@ -5,11 +5,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ngocthanh06/authentication/internal/handlers"
 	"github.com/ngocthanh06/authentication/internal/middleware"
+	"github.com/ngocthanh06/authentication/internal/providers"
 	"net/http"
 )
 
 func CreateRoutes() {
 	route := gin.Default()
+
+	// load controller
+	userController := handlers.UserHandler(providers.UserServ)
 
 	//route.Use(middleware.RequestTimeLogger())
 
@@ -25,18 +29,28 @@ func CreateRoutes() {
 			return
 		})
 
-		v1.GET("/users", middleware.AuthMiddleware(), handlers.GetUsers)
-		v1.GET("/user/:id", middleware.AuthMiddleware(), handlers.FindUser)
-		v1.POST("/user", middleware.AuthMiddleware(), handlers.CreateUser)
+		v1.GET("/users", middleware.AuthMiddleware(), userController.GetUsers)
+		v1.GET("/user/:id", middleware.AuthMiddleware(), userController.FindUser)
+		v1.POST("/user", middleware.AuthMiddleware(), userController.CreateUser)
 
 		// Un-login
 		v1.POST("/login", handlers.Login)
-		v1.POST("/register", handlers.CreateUser)
+		v1.POST("/register", userController.CreateUser)
 
 		// connect to social
 		v1.GET("redirect/:provider", handlers.RedirectProviderLogin)
 		v1.GET("auth/:provider/callback", handlers.CallbackProvider)
+
+		v1.GET("demo", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK,
+				gin.H{
+					"message": "ping thanh ne 123 hahaf",
+				},
+			)
+
+			return
+		})
 	}
 
-	route.Run(fmt.Sprintf(":%s", "8080"))
+	route.Run(fmt.Sprintf(":%s", "8081"))
 }
