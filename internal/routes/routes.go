@@ -40,17 +40,7 @@ func CreateRoutes() {
 		// connect to social
 		v1.GET("redirect/:provider", handlers.RedirectProviderLogin)
 		v1.GET("auth/:provider/callback", handlers.CallbackProvider)
-
-		v1.GET("demo", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK,
-				gin.H{
-					"message": "ping thanh ne 123 hahaf",
-				},
-			)
-
-			return
-		})
 	}
 
-	route.Run(fmt.Sprintf(":%s", "8081"))
+	route.Run(fmt.Sprintf(":%s", "8080"))
 }

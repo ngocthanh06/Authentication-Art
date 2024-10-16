@@ -19,5 +19,5 @@ func ConfigSetupProviders() {
 	UserRepo = repositories.NewUserRepository(database.DB)
 	AuthRepo := repositories.NewAuthRepository(database.DB)
 	UserServ = services.NewUserService(UserRepo)
-	AuthServ = services.NewAuthService(AuthRepo)
+	AuthServ = services.NewAuthService(AuthRepo, UserRepo)
 }
